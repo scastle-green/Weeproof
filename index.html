@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Weeproof</title>
+  <meta name="theme-color" content="#2563eb" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Weeproof" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>💧 Weeproof</h1>
+      <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
+    </header>
+
+    <main class="main">
+      <section class="status-card" id="statusCard">
+        <div class="status-row">
+          <span class="status-label">Last wee</span>
+          <span class="status-value" id="lastWeeValue">No wees logged yet</span>
+        </div>
+        <div class="divider"></div>
+        <div class="status-row">
+          <span class="status-label" id="nextLabel">Next reminder</span>
+          <span class="status-value status-countdown" id="countdownValue">—</span>
+        </div>
+      </section>
+
+      <button id="logWeeBtn" class="log-btn">
+        <span class="log-btn-icon">🚽</span>
+        <span class="log-btn-text">Log a wee</span>
+      </button>
+
+      <div id="notifyBanner" class="notify-banner hidden">
+        <p>Turn on notifications so you get the hourly reminder even when your phone is in your pocket.</p>
+        <button id="enableNotifyBtn" class="secondary-btn">Enable reminders</button>
+      </div>
+
+      <section class="history">
+        <div class="history-header">
+          <h2>Today</h2>
+          <span id="todayCount" class="today-count">0 wees</span>
+        </div>
+        <ul id="historyList" class="history-list">
+          <li class="empty-state">Nothing logged yet today.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <div id="settingsSheet" class="sheet hidden">
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="sheet-content">
+      <h2>Settings</h2>
+      <label class="field">
+        <span>Reminder interval</span>
+        <select id="intervalSelect">
+          <option value="30">Every 30 minutes</option>
+          <option value="60" selected>Every hour</option>
+          <option value="90">Every 90 minutes</option>
+          <option value="120">Every 2 hours</option>
+        </select>
+      </label>
+      <label class="field checkbox-field">
+        <input type="checkbox" id="soundToggle" checked />
+        <span>Play a sound when reminding</span>
+      </label>
+      <label class="field checkbox-field">
+        <input type="checkbox" id="vibrateToggle" checked />
+        <span>Vibrate when reminding</span>
+      </label>
+      <button id="clearHistoryBtn" class="danger-btn">Clear today's history</button>
+      <button id="closeSheetBtn" class="secondary-btn">Done</button>
+      <p class="fine-print">
+        Reminders fire while Weeproof is open or recently backgrounded. Keep it added to your
+        home screen and reopen it now and then so it can catch up if your phone put it to sleep.
+      </p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
