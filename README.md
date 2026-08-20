@@ -8,11 +8,12 @@ hourly reminder that resets every time you log a new one.
 - Tap **Log a wee** each time he goes.
 - The app shows a countdown to the next reminder — always `last wee time + interval` (1 hour by default).
 - Logging a new wee at any point (on the hour, the half hour, whenever) resets the countdown to start again from that moment.
-- If no new wee gets logged, it keeps reminding every interval from the last one until you log again.
+- If no new wee gets logged, the first reminder fires one interval after the last log — then, if it's still missed, it keeps nagging every "repeat" interval (10 min by default, set in Settings) instead of waiting a full interval again. Logging anything cancels the nagging and goes back to the normal cadence.
 - Tap **✎** next to the countdown to override the next reminder directly — nudge it with the +/-5/15/30/60m chips, set an exact clock time, or reset it back to the last-wee-plus-interval default.
 - Tap **Log an accident** to record one separately from successful wees. Accidents still reset the reminder countdown (he's not going to need to go again right away) but show up in the log tagged as an accident, and today's count breaks out `N wees · N accidents`.
+- Tap **Log at a different time** if you missed logging something in the moment — pick wee or accident and the actual time it happened, rather than "now".
 - Today's log is listed below the buttons; tap ✕ on an entry to remove a mis-tap.
-- Settings (⚙️) let you change the interval (30/60/90/120 min), toggle sound/vibration, and clear today's history.
+- Settings (⚙️) let you change the interval (30/60/90/120 min), the nag-repeat interval (5/10/15/30 min), toggle sound/vibration, and clear today's history.
 
 All data stays on the phone (`localStorage`) — there's no server or account.
 

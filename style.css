@@ -190,6 +190,17 @@ html, body {
   font-size: 17px;
 }
 
+.link-btn {
+  border: none;
+  background: transparent;
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px;
+  cursor: pointer;
+  align-self: center;
+}
+
 .notify-banner {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -391,6 +402,12 @@ html, body {
 
 .chip-btn:active {
   transform: scale(0.96);
+}
+
+.chip-btn.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .time-row {

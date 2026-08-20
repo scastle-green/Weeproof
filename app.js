@@ -4,6 +4,8 @@
   const STORAGE_EVENTS = 'weeproof.events';
   const STORAGE_NEXT_REMINDER = 'weeproof.nextReminderAt';
   const STORAGE_INTERVAL = 'weeproof.intervalMinutes';
+  const STORAGE_REPEAT_INTERVAL = 'weeproof.repeatIntervalMinutes';
+  const STORAGE_OVERSHOOT = 'weeproof.overshoot';
   const STORAGE_SOUND = 'weeproof.sound';
   const STORAGE_VIBRATE = 'weeproof.vibrate';
 
@@ -35,15 +37,26 @@
     exactTimeInput: document.getElementById('exactTimeInput'),
     setExactTimeBtn: document.getElementById('setExactTimeBtn'),
     resetReminderBtn: document.getElementById('resetReminderBtn'),
+    repeatIntervalSelect: document.getElementById('repeatIntervalSelect'),
+    logAtTimeBtn: document.getElementById('logAtTimeBtn'),
+    backdateSheet: document.getElementById('backdateSheet'),
+    backdateSheetBackdrop: document.getElementById('backdateSheetBackdrop'),
+    closeBackdateSheetBtn: document.getElementById('closeBackdateSheetBtn'),
+    backdateTypeRow: document.getElementById('backdateTypeRow'),
+    backdateTimeInput: document.getElementById('backdateTimeInput'),
+    submitBackdateBtn: document.getElementById('submitBackdateBtn'),
   };
 
   let events = loadEvents();
   let intervalMinutes = parseInt(localStorage.getItem(STORAGE_INTERVAL) || '60', 10);
+  let repeatIntervalMinutes = parseInt(localStorage.getItem(STORAGE_REPEAT_INTERVAL) || '10', 10);
+  let overshoot = localStorage.getItem(STORAGE_OVERSHOOT) === 'true';
   let soundOn = localStorage.getItem(STORAGE_SOUND) !== 'false';
   let vibrateOn = localStorage.getItem(STORAGE_VIBRATE) !== 'false';
   let nextReminderAt = loadNextReminderAt();
   let reminderTimer = null;
   let audioCtx = null;
+  let backdateType = 'wee';
 
   function loadEvents() {
     try {
@@ -77,14 +90,25 @@
     return intervalMinutes * 60 * 1000;
   }
 
+  function repeatIntervalMs() {
+    return repeatIntervalMinutes * 60 * 1000;
+  }
+
+  function saveOvershoot() {
+    localStorage.setItem(STORAGE_OVERSHOOT, String(overshoot));
+  }
+
   // --- Reminder scheduling -------------------------------------------------
   // Every new wee resets the next reminder to (that wee's time + interval).
-  // If nothing is logged in time, the reminder keeps firing every `interval`
-  // from the last log until a new wee resets it.
+  // If nothing is logged in time, the first reminder fires one `interval`
+  // after the last log, then keeps nagging every `repeatInterval` until a
+  // new wee/accident resets it.
 
   function resetReminderFrom(timestampMs) {
     nextReminderAt = timestampMs + intervalMs();
+    overshoot = false;
     saveNextReminderAt();
+    saveOvershoot();
     scheduleTimer();
   }
 
@@ -109,8 +133,11 @@
 
   function onReminderDue() {
     fireReminder();
-    nextReminderAt = nextReminderAt + intervalMs();
+    const step = overshoot ? repeatIntervalMs() : intervalMs();
+    overshoot = true;
+    nextReminderAt = nextReminderAt + step;
     saveNextReminderAt();
+    saveOvershoot();
     scheduleTimer();
   }
 
@@ -125,9 +152,11 @@
     }
     fireReminder();
     while (nextReminderAt <= now) {
-      nextReminderAt += intervalMs();
+      nextReminderAt += overshoot ? repeatIntervalMs() : intervalMs();
+      overshoot = true;
     }
     saveNextReminderAt();
+    saveOvershoot();
     scheduleTimer();
   }
 
@@ -325,13 +354,19 @@
 
   // --- Actions ---------------------------------------------------------
 
-  function logEvent(type) {
-    const now = Date.now();
-    events.push({ ts: now, type });
+  function addEvent(type, ts) {
+    events.push({ ts, type });
     events.sort((a, b) => a.ts - b.ts);
     saveEvents();
-    resetReminderFrom(now);
+    // Whichever event is now the most recent drives the reminder base,
+    // whether this one landed at the end or was backdated into the middle.
+    const lastEvent = events[events.length - 1];
+    resetReminderFrom(lastEvent.ts);
     render();
+  }
+
+  function logEvent(type) {
+    addEvent(type, Date.now());
     showToast(
       type === 'accident'
         ? 'Accident logged — next reminder in ' + intervalMinutes + ' min'
@@ -428,6 +463,43 @@
     updateCurrentTargetDisplay();
   }
 
+  // --- Backdated logging -----------------------------------------------
+
+  function setBackdateType(type) {
+    backdateType = type;
+    els.backdateTypeRow.querySelectorAll('.chip-btn').forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.type === type);
+    });
+  }
+
+  function openBackdateSheet() {
+    setBackdateType('wee');
+    const now = new Date();
+    els.backdateTimeInput.value =
+      String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    els.backdateSheet.classList.remove('hidden');
+  }
+
+  function closeBackdateSheet() {
+    els.backdateSheet.classList.add('hidden');
+  }
+
+  function submitBackdate() {
+    const match = /^(\d{2}):(\d{2})$/.exec(els.backdateTimeInput.value || '');
+    if (!match) return;
+    const [, hh, mm] = match;
+    const target = new Date();
+    target.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+    if (target.getTime() > Date.now()) {
+      target.setTime(Date.now());
+    }
+    addEvent(backdateType, target.getTime());
+    closeBackdateSheet();
+    showToast(
+      (backdateType === 'accident' ? 'Accident' : 'Wee') + ' logged for ' + formatTime(target.getTime())
+    );
+  }
+
   // --- Wiring ---------------------------------------------------------
 
   els.logWeeBtn.addEventListener('click', logWee);
@@ -454,6 +526,12 @@
     render();
   });
 
+  els.repeatIntervalSelect.value = String(repeatIntervalMinutes);
+  els.repeatIntervalSelect.addEventListener('change', () => {
+    repeatIntervalMinutes = parseInt(els.repeatIntervalSelect.value, 10);
+    localStorage.setItem(STORAGE_REPEAT_INTERVAL, String(repeatIntervalMinutes));
+  });
+
   els.soundToggle.checked = soundOn;
   els.soundToggle.addEventListener('change', () => {
     soundOn = els.soundToggle.checked;
@@ -478,6 +556,16 @@
   });
   els.setExactTimeBtn.addEventListener('click', setReminderToExactTime);
   els.resetReminderBtn.addEventListener('click', resetReminderToDefault);
+
+  els.logAtTimeBtn.addEventListener('click', openBackdateSheet);
+  els.closeBackdateSheetBtn.addEventListener('click', closeBackdateSheet);
+  els.backdateSheetBackdrop.addEventListener('click', closeBackdateSheet);
+  els.backdateTypeRow.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip-btn');
+    if (!btn) return;
+    setBackdateType(btn.dataset.type);
+  });
+  els.submitBackdateBtn.addEventListener('click', submitBackdate);
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {

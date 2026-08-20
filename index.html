@@ -46,6 +46,8 @@
         <span>Log an accident</span>
       </button>
 
+      <button id="logAtTimeBtn" class="link-btn">Log at a different time</button>
+
       <div id="notifyBanner" class="notify-banner hidden">
         <p>Turn on notifications so you get the hourly reminder even when your phone is in your pocket.</p>
         <button id="enableNotifyBtn" class="secondary-btn">Enable reminders</button>
@@ -74,6 +76,15 @@
           <option value="60" selected>Every hour</option>
           <option value="90">Every 90 minutes</option>
           <option value="120">Every 2 hours</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>If missed, nag again every</span>
+        <select id="repeatIntervalSelect">
+          <option value="5">5 minutes</option>
+          <option value="10" selected>10 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="30">30 minutes</option>
         </select>
       </label>
       <label class="field checkbox-field">
@@ -115,6 +126,25 @@
       </label>
       <button id="resetReminderBtn" class="secondary-btn">Reset to default (last wee + interval)</button>
       <button id="closeReminderSheetBtn" class="secondary-btn">Done</button>
+    </div>
+  </div>
+
+  <div id="backdateSheet" class="sheet hidden">
+    <div class="sheet-backdrop" id="backdateSheetBackdrop"></div>
+    <div class="sheet-content">
+      <h2>Log at a specific time</h2>
+      <div class="chip-row" id="backdateTypeRow">
+        <button type="button" class="chip-btn selected" data-type="wee">🚽 Wee</button>
+        <button type="button" class="chip-btn" data-type="accident">⚠️ Accident</button>
+      </div>
+      <label class="field">
+        <span>Time</span>
+        <div class="time-row">
+          <input type="time" id="backdateTimeInput" />
+        </div>
+      </label>
+      <button id="submitBackdateBtn" class="secondary-btn">Log it</button>
+      <button id="closeBackdateSheetBtn" class="secondary-btn">Cancel</button>
     </div>
   </div>
 
