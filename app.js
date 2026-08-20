@@ -12,6 +12,7 @@
     countdownValue: document.getElementById('countdownValue'),
     nextLabel: document.getElementById('nextLabel'),
     logWeeBtn: document.getElementById('logWeeBtn'),
+    logAccidentBtn: document.getElementById('logAccidentBtn'),
     historyList: document.getElementById('historyList'),
     todayCount: document.getElementById('todayCount'),
     notifyBanner: document.getElementById('notifyBanner'),
@@ -25,6 +26,15 @@
     vibrateToggle: document.getElementById('vibrateToggle'),
     clearHistoryBtn: document.getElementById('clearHistoryBtn'),
     toast: document.getElementById('toast'),
+    editReminderBtn: document.getElementById('editReminderBtn'),
+    reminderSheet: document.getElementById('reminderSheet'),
+    reminderSheetBackdrop: document.getElementById('reminderSheetBackdrop'),
+    closeReminderSheetBtn: document.getElementById('closeReminderSheetBtn'),
+    currentTargetValue: document.getElementById('currentTargetValue'),
+    chipRow: document.querySelector('#reminderSheet .chip-row'),
+    exactTimeInput: document.getElementById('exactTimeInput'),
+    setExactTimeBtn: document.getElementById('setExactTimeBtn'),
+    resetReminderBtn: document.getElementById('resetReminderBtn'),
   };
 
   let events = loadEvents();
@@ -38,7 +48,9 @@
   function loadEvents() {
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_EVENTS) || '[]');
-      return Array.isArray(raw) ? raw : [];
+      if (!Array.isArray(raw)) return [];
+      // Migrate the old format (plain timestamp numbers) to {ts, type}.
+      return raw.map((e) => (typeof e === 'number' ? { ts: e, type: 'wee' } : e));
     } catch {
       return [];
     }
@@ -243,9 +255,15 @@
 
   function render() {
     const lastEvent = events[events.length - 1];
-    els.lastWeeValue.textContent = lastEvent
-      ? `${formatTime(lastEvent)} · ${formatDuration(Date.now() - lastEvent, { compact: true })} ago`
-      : 'No wees logged yet';
+    if (!lastEvent) {
+      els.lastWeeValue.textContent = 'Nothing logged yet';
+    } else {
+      const ago = formatDuration(Date.now() - lastEvent.ts, { compact: true });
+      els.lastWeeValue.textContent =
+        lastEvent.type === 'accident'
+          ? `⚠️ Accident · ${formatTime(lastEvent.ts)} · ${ago} ago`
+          : `${formatTime(lastEvent.ts)} · ${ago} ago`;
+    }
 
     if (nextReminderAt === null) {
       els.nextLabel.textContent = 'Next reminder';
@@ -268,8 +286,12 @@
   }
 
   function renderHistory() {
-    const todayEvents = events.filter(isToday).slice().reverse();
-    els.todayCount.textContent = `${todayEvents.length} wee${todayEvents.length === 1 ? '' : 's'}`;
+    const todayEvents = events.filter((e) => isToday(e.ts)).slice().reverse();
+    const weeCount = todayEvents.filter((e) => e.type !== 'accident').length;
+    const accidentCount = todayEvents.length - weeCount;
+    els.todayCount.textContent =
+      `${weeCount} wee${weeCount === 1 ? '' : 's'}` +
+      (accidentCount > 0 ? ` · ${accidentCount} accident${accidentCount === 1 ? '' : 's'}` : '');
 
     if (todayEvents.length === 0) {
       els.historyList.innerHTML = '<li class="empty-state">Nothing logged yet today.</li>';
@@ -277,15 +299,18 @@
     }
 
     els.historyList.innerHTML = '';
-    todayEvents.forEach((ts) => {
+    todayEvents.forEach((e) => {
+      const isAccident = e.type === 'accident';
       const li = document.createElement('li');
-      li.className = 'history-item';
+      li.className = 'history-item' + (isAccident ? ' accident' : '');
       li.innerHTML = `
         <div>
-          <div class="history-item-time">${formatTime(ts)}</div>
-          <div class="history-item-ago">${formatDuration(Date.now() - ts, { compact: true })} ago</div>
+          <div class="history-item-time">${formatTime(e.ts)}${
+            isAccident ? '<span class="history-item-type">Accident</span>' : ''
+          }</div>
+          <div class="history-item-ago">${formatDuration(Date.now() - e.ts, { compact: true })} ago</div>
         </div>
-        <button class="history-item-delete" aria-label="Delete entry" data-ts="${ts}">✕</button>
+        <button class="history-item-delete" aria-label="Delete entry" data-ts="${e.ts}">✕</button>
       `;
       els.historyList.appendChild(li);
     });
@@ -300,30 +325,42 @@
 
   // --- Actions ---------------------------------------------------------
 
-  function logWee() {
+  function logEvent(type) {
     const now = Date.now();
-    events.push(now);
-    events.sort((a, b) => a - b);
+    events.push({ ts: now, type });
+    events.sort((a, b) => a.ts - b.ts);
     saveEvents();
     resetReminderFrom(now);
     render();
-    showToast('Logged — next reminder in ' + intervalMinutes + ' min');
+    showToast(
+      type === 'accident'
+        ? 'Accident logged — next reminder in ' + intervalMinutes + ' min'
+        : 'Logged — next reminder in ' + intervalMinutes + ' min'
+    );
+  }
+
+  function logWee() {
+    logEvent('wee');
+  }
+
+  function logAccident() {
+    logEvent('accident');
   }
 
   function deleteEvent(ts) {
-    events = events.filter((e) => e !== ts);
+    events = events.filter((e) => e.ts !== ts);
     saveEvents();
 
     const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent || Date.now());
+    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
     render();
   }
 
   function clearTodayHistory() {
-    events = events.filter((ts) => !isToday(ts));
+    events = events.filter((e) => !isToday(e.ts));
     saveEvents();
     const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent || Date.now());
+    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
     render();
     closeSheet();
   }
@@ -336,9 +373,65 @@
     els.settingsSheet.classList.add('hidden');
   }
 
+  // --- Reminder override ---------------------------------------------------
+
+  function updateCurrentTargetDisplay() {
+    els.currentTargetValue.innerHTML =
+      nextReminderAt === null
+        ? 'Not scheduled'
+        : `Currently set for <strong>${formatTime(nextReminderAt)}</strong>`;
+  }
+
+  function openReminderSheet() {
+    updateCurrentTargetDisplay();
+    const base = nextReminderAt === null ? Date.now() : nextReminderAt;
+    const d = new Date(base);
+    els.exactTimeInput.value =
+      String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    els.reminderSheet.classList.remove('hidden');
+  }
+
+  function closeReminderSheet() {
+    els.reminderSheet.classList.add('hidden');
+  }
+
+  function adjustReminder(deltaMinutes) {
+    const base = nextReminderAt === null ? Date.now() : nextReminderAt;
+    nextReminderAt = base + deltaMinutes * 60 * 1000;
+    saveNextReminderAt();
+    scheduleTimer();
+    render();
+    updateCurrentTargetDisplay();
+  }
+
+  function setReminderToExactTime() {
+    const match = /^(\d{2}):(\d{2})$/.exec(els.exactTimeInput.value || '');
+    if (!match) return;
+    const [, hh, mm] = match;
+    const target = new Date();
+    target.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+    if (target.getTime() <= Date.now()) {
+      target.setDate(target.getDate() + 1);
+    }
+    nextReminderAt = target.getTime();
+    saveNextReminderAt();
+    scheduleTimer();
+    render();
+    updateCurrentTargetDisplay();
+    showToast('Next reminder set for ' + formatTime(nextReminderAt));
+  }
+
+  function resetReminderToDefault() {
+    const lastEvent = events[events.length - 1];
+    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
+    render();
+    updateCurrentTargetDisplay();
+  }
+
   // --- Wiring ---------------------------------------------------------
 
   els.logWeeBtn.addEventListener('click', logWee);
+  els.logAccidentBtn.addEventListener('click', logAccident);
 
   els.historyList.addEventListener('click', (e) => {
     const btn = e.target.closest('.history-item-delete');
@@ -357,9 +450,7 @@
     intervalMinutes = parseInt(els.intervalSelect.value, 10);
     localStorage.setItem(STORAGE_INTERVAL, String(intervalMinutes));
     const lastEvent = events[events.length - 1];
-    if (lastEvent) {
-      resetReminderFrom(lastEvent);
-    }
+    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
     render();
   });
 
@@ -376,6 +467,17 @@
   });
 
   els.clearHistoryBtn.addEventListener('click', clearTodayHistory);
+
+  els.editReminderBtn.addEventListener('click', openReminderSheet);
+  els.closeReminderSheetBtn.addEventListener('click', closeReminderSheet);
+  els.reminderSheetBackdrop.addEventListener('click', closeReminderSheet);
+  els.chipRow.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip-btn');
+    if (!btn) return;
+    adjustReminder(parseInt(btn.dataset.adjust, 10));
+  });
+  els.setExactTimeBtn.addEventListener('click', setReminderToExactTime);
+  els.resetReminderBtn.addEventListener('click', resetReminderToDefault);
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {

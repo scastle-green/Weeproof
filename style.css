@@ -6,6 +6,9 @@
   --accent: #2563eb;
   --accent-dark: #1d4ed8;
   --danger: #dc2626;
+  --warn: #b45309;
+  --warn-bg: #fffbeb;
+  --warn-border: #fde68a;
   --border: #e2e8f0;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -20,6 +23,9 @@
     --accent: #3b82f6;
     --accent-dark: #60a5fa;
     --border: #263349;
+    --warn: #fbbf24;
+    --warn-bg: #2a2210;
+    --warn-border: #4d3c12;
   }
 }
 
@@ -112,6 +118,22 @@ html, body {
   color: var(--danger);
 }
 
+.status-value-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 15px;
+  padding: 4px 6px;
+  cursor: pointer;
+  line-height: 1;
+}
+
 .divider {
   height: 1px;
   background: var(--border);
@@ -142,6 +164,30 @@ html, body {
 
 .log-btn-icon {
   font-size: 30px;
+}
+
+.accident-btn {
+  width: 100%;
+  border: 1px solid var(--warn-border);
+  border-radius: 16px;
+  background: var(--warn-bg);
+  color: var(--warn);
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.accident-btn:active {
+  transform: scale(0.98);
+}
+
+.accident-btn-icon {
+  font-size: 17px;
 }
 
 .notify-banner {
@@ -230,8 +276,20 @@ html, body {
   justify-content: space-between;
 }
 
+.history-item.accident {
+  background: var(--warn-bg);
+  border-color: var(--warn-border);
+}
+
 .history-item-time {
   font-weight: 600;
+}
+
+.history-item-type {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--warn);
+  margin-left: 8px;
 }
 
 .history-item-ago {
@@ -294,13 +352,54 @@ html, body {
   color: var(--text-muted);
 }
 
-.field select {
+.field select,
+.field input[type="time"] {
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
   font-size: 15px;
+}
+
+.current-target {
+  margin: -6px 0 0;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.current-target strong {
+  color: var(--text);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chip-btn:active {
+  transform: scale(0.96);
+}
+
+.time-row {
+  display: flex;
+  gap: 8px;
+}
+
+.time-row input[type="time"] {
+  flex: 1;
 }
 
 .checkbox-field {

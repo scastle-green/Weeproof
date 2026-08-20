@@ -23,19 +23,27 @@
     <main class="main">
       <section class="status-card" id="statusCard">
         <div class="status-row">
-          <span class="status-label">Last wee</span>
-          <span class="status-value" id="lastWeeValue">No wees logged yet</span>
+          <span class="status-label">Last logged</span>
+          <span class="status-value" id="lastWeeValue">Nothing logged yet</span>
         </div>
         <div class="divider"></div>
         <div class="status-row">
           <span class="status-label" id="nextLabel">Next reminder</span>
-          <span class="status-value status-countdown" id="countdownValue">—</span>
+          <span class="status-value-group">
+            <span class="status-value status-countdown" id="countdownValue">—</span>
+            <button id="editReminderBtn" class="edit-btn" aria-label="Adjust next reminder">✎</button>
+          </span>
         </div>
       </section>
 
       <button id="logWeeBtn" class="log-btn">
         <span class="log-btn-icon">🚽</span>
         <span class="log-btn-text">Log a wee</span>
+      </button>
+
+      <button id="logAccidentBtn" class="accident-btn">
+        <span class="accident-btn-icon">⚠️</span>
+        <span>Log an accident</span>
       </button>
 
       <div id="notifyBanner" class="notify-banner hidden">
@@ -82,6 +90,31 @@
         Reminders fire while Weeproof is open or recently backgrounded. Keep it added to your
         home screen and reopen it now and then so it can catch up if your phone put it to sleep.
       </p>
+    </div>
+  </div>
+
+  <div id="reminderSheet" class="sheet hidden">
+    <div class="sheet-backdrop" id="reminderSheetBackdrop"></div>
+    <div class="sheet-content">
+      <h2>Adjust next reminder</h2>
+      <p class="current-target" id="currentTargetValue">—</p>
+      <div class="chip-row">
+        <button class="chip-btn" data-adjust="-15">-15m</button>
+        <button class="chip-btn" data-adjust="-5">-5m</button>
+        <button class="chip-btn" data-adjust="5">+5m</button>
+        <button class="chip-btn" data-adjust="15">+15m</button>
+        <button class="chip-btn" data-adjust="30">+30m</button>
+        <button class="chip-btn" data-adjust="60">+1h</button>
+      </div>
+      <label class="field">
+        <span>Or set an exact time</span>
+        <div class="time-row">
+          <input type="time" id="exactTimeInput" />
+          <button id="setExactTimeBtn" class="secondary-btn">Set</button>
+        </div>
+      </label>
+      <button id="resetReminderBtn" class="secondary-btn">Reset to default (last wee + interval)</button>
+      <button id="closeReminderSheetBtn" class="secondary-btn">Done</button>
     </div>
   </div>
 
