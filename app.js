@@ -315,13 +315,7 @@
     saveEvents();
 
     const lastEvent = events[events.length - 1];
-    if (lastEvent) {
-      resetReminderFrom(lastEvent);
-    } else {
-      nextReminderAt = null;
-      saveNextReminderAt();
-      clearTimer();
-    }
+    resetReminderFrom(lastEvent || Date.now());
     render();
   }
 
@@ -329,13 +323,7 @@
     events = events.filter((ts) => !isToday(ts));
     saveEvents();
     const lastEvent = events[events.length - 1];
-    if (lastEvent) {
-      resetReminderFrom(lastEvent);
-    } else {
-      nextReminderAt = null;
-      saveNextReminderAt();
-      clearTimer();
-    }
+    resetReminderFrom(lastEvent || Date.now());
     render();
     closeSheet();
   }
@@ -410,7 +398,13 @@
   // --- Init ---------------------------------------------------------
 
   updateNotifyBanner();
-  scheduleTimer();
+  if (nextReminderAt === null) {
+    // No wee logged yet (fresh install, or history cleared) - still start
+    // an hourly reminder cycle from now so the countdown isn't blank.
+    resetReminderFrom(Date.now());
+  } else {
+    scheduleTimer();
+  }
   render();
   setInterval(render, 1000);
 })();
