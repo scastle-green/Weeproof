@@ -9,6 +9,9 @@
   --warn: #b45309;
   --warn-bg: #fffbeb;
   --warn-border: #fde68a;
+  --poo: #7c5a3a;
+  --poo-bg: #fdf6ec;
+  --poo-border: #e8d5b7;
   --border: #e2e8f0;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -26,6 +29,9 @@
     --warn: #fbbf24;
     --warn-bg: #2a2210;
     --warn-border: #4d3c12;
+    --poo: #d9b183;
+    --poo-bg: #241c12;
+    --poo-border: #4a3826;
   }
 }
 
@@ -190,6 +196,30 @@ html, body {
   font-size: 17px;
 }
 
+.poo-btn {
+  width: 100%;
+  border: 1px solid var(--poo-border);
+  border-radius: 16px;
+  background: var(--poo-bg);
+  color: var(--poo);
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.poo-btn:active {
+  transform: scale(0.98);
+}
+
+.poo-btn-icon {
+  font-size: 17px;
+}
+
 .link-btn {
   border: none;
   background: transparent;
@@ -292,6 +322,11 @@ html, body {
   border-color: var(--warn-border);
 }
 
+.history-item.poo {
+  background: var(--poo-bg);
+  border-color: var(--poo-border);
+}
+
 .history-item-time {
   font-weight: 600;
 }
@@ -301,6 +336,10 @@ html, body {
   font-weight: 600;
   color: var(--warn);
   margin-left: 8px;
+}
+
+.history-item-type.poo-type {
+  color: var(--poo);
 }
 
 .history-item-ago {

@@ -8,12 +8,40 @@ hourly reminder that resets every time you log a new one.
 - Tap **Log a wee** each time he goes.
 - The app shows a countdown to the next reminder — always `last wee time + interval` (1 hour by default).
 - Logging a new wee at any point (on the hour, the half hour, whenever) resets the countdown to start again from that moment.
-- If no new wee gets logged, the first reminder fires one interval after the last log — then, if it's still missed, it keeps nagging every "repeat" interval (10 min by default, set in Settings) instead of waiting a full interval again. Logging anything cancels the nagging and goes back to the normal cadence.
+- If no new wee gets logged, the first reminder fires one interval after the last log — then, if it's still missed, it keeps nagging every "repeat" interval (10 min by default, set in Settings) instead of waiting a full interval again. Logging a wee or accident cancels the nagging and goes back to the normal cadence.
 - Tap **✎** next to the countdown to override the next reminder directly — nudge it with the +/-5/15/30/60m chips, set an exact clock time, or reset it back to the last-wee-plus-interval default.
 - Tap **Log an accident** to record one separately from successful wees. Accidents still reset the reminder countdown (he's not going to need to go again right away) but show up in the log tagged as an accident, and today's count breaks out `N wees · N accidents`.
-- Tap **Log at a different time** if you missed logging something in the moment — pick wee or accident and the actual time it happened, rather than "now".
+- Tap **Log a poo** to track bowel movements too — useful for spotting a constipation pattern, which is a common cause of daytime wetting regressions (see below). Poos are tracked and shown in the log, but deliberately don't affect the wee reminder at all.
+- Tap **Log at a different time** if you missed logging something in the moment — pick wee, accident, or poo and the actual time it happened, rather than "now".
 - Today's log is listed below the buttons; tap ✕ on an entry to remove a mis-tap.
 - Settings (⚙️) let you change the interval (30/60/90/120 min), the nag-repeat interval (5/10/15/30 min), toggle sound/vibration, and clear today's history.
+
+## Background reading
+
+If daytime wetting has come back after your child was previously dry, a few
+things worth knowing:
+
+- Almost all kids with daytime wetting issues have some degree of
+  constipation too, even without obvious symptoms — a full rectum physically
+  presses on the bladder. In one study, 89% of kids became dry in the day
+  once the constipation was treated. This is why Weeproof tracks poos as
+  well as wees — long gaps are worth mentioning to a GP.
+  ([UNC Urology](https://www.med.unc.edu/urology/pediatrics/pediatric-conditions/daytime-wetness/),
+  [PMC: Bladder and Bowel Dysfunction in Children](https://pmc.ncbi.nlm.nih.gov/articles/PMC5332240/))
+- Scheduled toilet reminders ("timed voiding") — the core thing this app
+  does — are recommended as first-line care by the International
+  Children's Continence Society for any child with daytime incontinence.
+  ([ICCS standardization document](https://onlinelibrary.wiley.com/doi/abs/10.1002/nau.22911))
+- The trial evidence behind these interventions is honestly thin and
+  inconsistent, so "recommended practice" isn't the same as "proven to work
+  fast" — worth keeping expectations realistic.
+  ([Cochrane review](https://www.cochrane.org/evidence/CD012367_conservative-non-pharmaceutical-and-non-surgical-treatments-children-who-have-daytime-urinary))
+- Punishment and shaming reliably make accidents worse, not better — it
+  turns toileting into a stress trigger instead of a mastery goal.
+  ([Why Punishment Derails Potty Training](https://mom.com/toddler/20906-why-punishment-derails-potty-training))
+
+None of this is medical advice — if it persists or you're worried, a GP or
+paediatrician is the right call.
 
 All data stays on the phone (`localStorage`) — there's no server or account.
 

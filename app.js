@@ -15,6 +15,7 @@
     nextLabel: document.getElementById('nextLabel'),
     logWeeBtn: document.getElementById('logWeeBtn'),
     logAccidentBtn: document.getElementById('logAccidentBtn'),
+    logPooBtn: document.getElementById('logPooBtn'),
     historyList: document.getElementById('historyList'),
     todayCount: document.getElementById('todayCount'),
     notifyBanner: document.getElementById('notifyBanner'),
@@ -288,10 +289,8 @@
       els.lastWeeValue.textContent = 'Nothing logged yet';
     } else {
       const ago = formatDuration(Date.now() - lastEvent.ts, { compact: true });
-      els.lastWeeValue.textContent =
-        lastEvent.type === 'accident'
-          ? `⚠️ Accident · ${formatTime(lastEvent.ts)} · ${ago} ago`
-          : `${formatTime(lastEvent.ts)} · ${ago} ago`;
+      const prefix = lastEvent.type === 'accident' ? '⚠️ Accident · ' : lastEvent.type === 'poo' ? '💩 Poo · ' : '';
+      els.lastWeeValue.textContent = `${prefix}${formatTime(lastEvent.ts)} · ${ago} ago`;
     }
 
     if (nextReminderAt === null) {
@@ -316,11 +315,13 @@
 
   function renderHistory() {
     const todayEvents = events.filter((e) => isToday(e.ts)).slice().reverse();
-    const weeCount = todayEvents.filter((e) => e.type !== 'accident').length;
-    const accidentCount = todayEvents.length - weeCount;
+    const weeCount = todayEvents.filter((e) => e.type === 'wee').length;
+    const accidentCount = todayEvents.filter((e) => e.type === 'accident').length;
+    const pooCount = todayEvents.filter((e) => e.type === 'poo').length;
     els.todayCount.textContent =
       `${weeCount} wee${weeCount === 1 ? '' : 's'}` +
-      (accidentCount > 0 ? ` · ${accidentCount} accident${accidentCount === 1 ? '' : 's'}` : '');
+      (accidentCount > 0 ? ` · ${accidentCount} accident${accidentCount === 1 ? '' : 's'}` : '') +
+      (pooCount > 0 ? ` · ${pooCount} poo${pooCount === 1 ? '' : 's'}` : '');
 
     if (todayEvents.length === 0) {
       els.historyList.innerHTML = '<li class="empty-state">Nothing logged yet today.</li>';
@@ -329,14 +330,17 @@
 
     els.historyList.innerHTML = '';
     todayEvents.forEach((e) => {
-      const isAccident = e.type === 'accident';
       const li = document.createElement('li');
-      li.className = 'history-item' + (isAccident ? ' accident' : '');
+      li.className = 'history-item' + (e.type !== 'wee' ? ' ' + e.type : '');
+      const typeTag =
+        e.type === 'accident'
+          ? '<span class="history-item-type">Accident</span>'
+          : e.type === 'poo'
+          ? '<span class="history-item-type poo-type">Poo</span>'
+          : '';
       li.innerHTML = `
         <div>
-          <div class="history-item-time">${formatTime(e.ts)}${
-            isAccident ? '<span class="history-item-type">Accident</span>' : ''
-          }</div>
+          <div class="history-item-time">${formatTime(e.ts)}${typeTag}</div>
           <div class="history-item-ago">${formatDuration(Date.now() - e.ts, { compact: true })} ago</div>
         </div>
         <button class="history-item-delete" aria-label="Delete entry" data-ts="${e.ts}">✕</button>
@@ -354,23 +358,31 @@
 
   // --- Actions ---------------------------------------------------------
 
+  // Poos don't mean he needed a wee, so they don't drive the reminder -
+  // only the most recent wee/accident does.
+  function mostRecentReminderEvent() {
+    for (let i = events.length - 1; i >= 0; i--) {
+      if (events[i].type !== 'poo') return events[i];
+    }
+    return null;
+  }
+
   function addEvent(type, ts) {
     events.push({ ts, type });
     events.sort((a, b) => a.ts - b.ts);
     saveEvents();
-    // Whichever event is now the most recent drives the reminder base,
-    // whether this one landed at the end or was backdated into the middle.
-    const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent.ts);
+    if (type !== 'poo') {
+      const reminderEvent = mostRecentReminderEvent();
+      resetReminderFrom(reminderEvent ? reminderEvent.ts : ts);
+    }
     render();
   }
 
   function logEvent(type) {
     addEvent(type, Date.now());
+    const label = type === 'accident' ? 'Accident' : type === 'poo' ? 'Poo' : 'Wee';
     showToast(
-      type === 'accident'
-        ? 'Accident logged — next reminder in ' + intervalMinutes + ' min'
-        : 'Logged — next reminder in ' + intervalMinutes + ' min'
+      type === 'poo' ? 'Poo logged' : label + ' logged — next reminder in ' + intervalMinutes + ' min'
     );
   }
 
@@ -382,20 +394,29 @@
     logEvent('accident');
   }
 
+  function logPoo() {
+    logEvent('poo');
+  }
+
   function deleteEvent(ts) {
+    const deleted = events.find((e) => e.ts === ts);
     events = events.filter((e) => e.ts !== ts);
     saveEvents();
 
-    const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
+    // Deleting a poo doesn't touch the wee reminder - it never drove it,
+    // so leave any current schedule (including a manual override) as-is.
+    if (deleted && deleted.type !== 'poo') {
+      const reminderEvent = mostRecentReminderEvent();
+      resetReminderFrom(reminderEvent ? reminderEvent.ts : Date.now());
+    }
     render();
   }
 
   function clearTodayHistory() {
     events = events.filter((e) => !isToday(e.ts));
     saveEvents();
-    const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
+    const reminderEvent = mostRecentReminderEvent();
+    resetReminderFrom(reminderEvent ? reminderEvent.ts : Date.now());
     render();
     closeSheet();
   }
@@ -457,8 +478,8 @@
   }
 
   function resetReminderToDefault() {
-    const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
+    const reminderEvent = mostRecentReminderEvent();
+    resetReminderFrom(reminderEvent ? reminderEvent.ts : Date.now());
     render();
     updateCurrentTargetDisplay();
   }
@@ -495,15 +516,15 @@
     }
     addEvent(backdateType, target.getTime());
     closeBackdateSheet();
-    showToast(
-      (backdateType === 'accident' ? 'Accident' : 'Wee') + ' logged for ' + formatTime(target.getTime())
-    );
+    const label = backdateType === 'accident' ? 'Accident' : backdateType === 'poo' ? 'Poo' : 'Wee';
+    showToast(label + ' logged for ' + formatTime(target.getTime()));
   }
 
   // --- Wiring ---------------------------------------------------------
 
   els.logWeeBtn.addEventListener('click', logWee);
   els.logAccidentBtn.addEventListener('click', logAccident);
+  els.logPooBtn.addEventListener('click', logPoo);
 
   els.historyList.addEventListener('click', (e) => {
     const btn = e.target.closest('.history-item-delete');
@@ -521,8 +542,8 @@
   els.intervalSelect.addEventListener('change', () => {
     intervalMinutes = parseInt(els.intervalSelect.value, 10);
     localStorage.setItem(STORAGE_INTERVAL, String(intervalMinutes));
-    const lastEvent = events[events.length - 1];
-    resetReminderFrom(lastEvent ? lastEvent.ts : Date.now());
+    const reminderEvent = mostRecentReminderEvent();
+    resetReminderFrom(reminderEvent ? reminderEvent.ts : Date.now());
     render();
   });
 

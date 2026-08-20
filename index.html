@@ -46,6 +46,11 @@
         <span>Log an accident</span>
       </button>
 
+      <button id="logPooBtn" class="poo-btn">
+        <span class="poo-btn-icon">💩</span>
+        <span>Log a poo</span>
+      </button>
+
       <button id="logAtTimeBtn" class="link-btn">Log at a different time</button>
 
       <div id="notifyBanner" class="notify-banner hidden">
@@ -124,7 +129,7 @@
           <button id="setExactTimeBtn" class="secondary-btn">Set</button>
         </div>
       </label>
-      <button id="resetReminderBtn" class="secondary-btn">Reset to default (last wee + interval)</button>
+      <button id="resetReminderBtn" class="secondary-btn">Reset to default (last wee/accident + interval)</button>
       <button id="closeReminderSheetBtn" class="secondary-btn">Done</button>
     </div>
   </div>
@@ -136,6 +141,7 @@
       <div class="chip-row" id="backdateTypeRow">
         <button type="button" class="chip-btn selected" data-type="wee">🚽 Wee</button>
         <button type="button" class="chip-btn" data-type="accident">⚠️ Accident</button>
+        <button type="button" class="chip-btn" data-type="poo">💩 Poo</button>
       </div>
       <label class="field">
         <span>Time</span>
