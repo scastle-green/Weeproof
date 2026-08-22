@@ -84,8 +84,9 @@
   supersedes the earlier Firebase/Supabase suggestion), plus some
   lightweight way to pair two phones to the same child's data (e.g. a
   share code/link, not full account creation). Bigger lift - revisit
-  alongside the Web Push backend work, since both need the same "small
-  server" foundation.
+  alongside the notification-reliability work (Web Push if it stays a
+  PWA, or just native push if the Flutter path in Architecture notes
+  goes ahead), since both need the same "small server" foundation.
 - [ ] **Multiple children.** E.g. twins - would need a child selector
   before logging, and all history/reminders scoped per child instead of
   one global log. Genuinely a real edge case, low priority, but noting
@@ -94,6 +95,23 @@
   above than to retrofit later.
 
 ## Architecture notes (backend, auth)
+- [ ] **Client: Flutter**, being considered instead of the earlier
+  "wrap the existing PWA in Capacitor" plan. Worth being clear-eyed
+  that this is a bigger call than it sounds: it's a full rewrite (Dart,
+  not the existing HTML/CSS/JS) rather than reusing what's built,
+  whereas Capacitor would have wrapped the current code as-is. The
+  upside is real though - it cleanly resolves two things noted
+  separately above without extra plumbing: `local_auth` gives proper
+  native biometrics, and native push (FCM/APNs) sidesteps the Web Push
+  backend complexity noted under Multi-parent logging - a real app
+  shell can schedule/receive notifications far more reliably than a
+  backgrounded browser tab ever could.
+- [ ] **Backend API: Python, PHP, or Node** - Node was flagged with
+  "assuming it can handle the MySQL side" - it can, comfortably (the
+  `mysql2` driver plus an ORM like Prisma or Knex is a completely
+  standard, mature combination). So the choice between the three is
+  genuinely just about preference/familiarity, not a technical
+  limitation of any of them.
 - [ ] **Database: self-hosted MySQL**, not a managed platform. Decision
   is to keep ongoing cost low by hosting it yourself rather than
   Firebase/Supabase's per-project managed tier. Real trade-off worth
@@ -110,8 +128,7 @@
   be offered as an option.
 - [ ] **Biometrics baked in** - Face ID / Touch ID / fingerprint to
   unlock the app, presumably given the health-adjacent nature of the
-  data. Two implementation paths depending on how the app ends up
-  shipping: WebAuthn if it stays a web/PWA (modern mobile browsers
-  support real biometric-backed unlock), or a native biometric plugin
-  if it ends up wrapped via Capacitor per the earlier native-app
-  discussion.
+  data. If the Flutter path above goes ahead, this is just the
+  `local_auth` package - straightforward. (Only falls back to WebAuthn
+  or a Capacitor plugin if the client decision above reverts to staying
+  web-based.)
