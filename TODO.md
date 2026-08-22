@@ -103,6 +103,11 @@
   above than to retrofit later.
 
 ## Architecture notes (backend, auth)
+- See `BUILD_BRIEF.md` in this repo for the standalone spec to hand to a
+  coding agent for the actual Flutter rebuild - it captures the exact
+  reminder algorithm, data model, and phased scope (MVP -> shared data ->
+  nice-to-haves) so a fresh agent doesn't need this whole file's history.
+
 - [ ] **Client: Flutter**, being considered instead of the earlier
   "wrap the existing PWA in Capacitor" plan. Worth being clear-eyed
   that this is a bigger call than it sounds: it's a full rewrite (Dart,
