@@ -7,6 +7,14 @@
   limitation is the direct reason Weeproof exists.
 - Branding idea to consider alongside (or instead of) "Weeproof": **"A
   Wee Reminder"**.
+- **The live PWA (GitHub Pages) is a proof of concept, not the shipping
+  product.** It's staying up because it's genuinely being used day to
+  day, but it was never the plan to launch/market/monetize *that* -
+  the Flutter + MySQL + Node/Python/PHP stack under Architecture notes
+  is the actual productization path if this gets taken further. Worth
+  keeping in mind when reading the ASO/pricing/distribution notes
+  elsewhere in this file: those were scoped to a future native app, not
+  a plan to push the current web version as a real release.
 
 ## Research
 - [x] Look into the science/papers on daytime wetting regression in
