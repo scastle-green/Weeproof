@@ -79,15 +79,39 @@
 ## Future considerations (not building yet)
 - [ ] **Multi-parent logging.** Both parents should be able to log and
   see the same data without buying/installing it twice. Needs real
-  shared storage (ties to the earlier "cheapest persistence" discussion
-  - Firebase/Supabase free tier) instead of the current per-device
-  `localStorage`, plus some lightweight way to pair two phones to the
-  same child's data (e.g. a share code/link, not full account
-  creation). Bigger lift - revisit alongside the Web Push backend work,
-  since both need the same "small server" foundation.
+  shared storage instead of the current per-device `localStorage` (see
+  Architecture notes below for the current DB/hosting decision - this
+  supersedes the earlier Firebase/Supabase suggestion), plus some
+  lightweight way to pair two phones to the same child's data (e.g. a
+  share code/link, not full account creation). Bigger lift - revisit
+  alongside the Web Push backend work, since both need the same "small
+  server" foundation.
 - [ ] **Multiple children.** E.g. twins - would need a child selector
   before logging, and all history/reminders scoped per child instead of
   one global log. Genuinely a real edge case, low priority, but noting
   it now since it'd affect the data model (events would need a
   `childId`) - cheaper to account for in the shared-storage redesign
   above than to retrofit later.
+
+## Architecture notes (backend, auth)
+- [ ] **Database: self-hosted MySQL**, not a managed platform. Decision
+  is to keep ongoing cost low by hosting it yourself rather than
+  Firebase/Supabase's per-project managed tier. Real trade-off worth
+  keeping in mind: this moves cost from money to your own time - you
+  own patching, backups, and uptime instead of a managed platform
+  handling it. Also needs somewhere to actually run it, since MySQL
+  itself doesn't have a meaningful free managed tier the way
+  Firebase/Supabase do (a small VPS - e.g. Hetzner/DigitalOcean - or
+  self-hosting at home are the realistic options).
+- [ ] **Auth: prefer OAuth where possible** over building
+  username/password from scratch - e.g. Sign in with Apple / Google.
+  Note: if the app ships on iOS and offers any third-party OAuth login,
+  Apple's App Store guidelines (4.8) require Sign in with Apple to also
+  be offered as an option.
+- [ ] **Biometrics baked in** - Face ID / Touch ID / fingerprint to
+  unlock the app, presumably given the health-adjacent nature of the
+  data. Two implementation paths depending on how the app ends up
+  shipping: WebAuthn if it stays a web/PWA (modern mobile browsers
+  support real biometric-backed unlock), or a native biometric plugin
+  if it ends up wrapped via Capacitor per the earlier native-app
+  discussion.
