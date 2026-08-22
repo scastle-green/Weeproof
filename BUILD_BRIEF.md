@@ -21,10 +21,19 @@ one. See `README.md` in this repo for the fuller research summary and
 citations.
 
 **Who this is not for:** toddlers being potty-trained for the first time.
-That's a much more crowded app category with different needs (rewards,
-training schedules, readiness assessment). Don't pull in UX patterns from
-that category (star charts, training curricula, etc.) — this is a narrower,
-quieter tool for an older kid and their parent.
+That's a much more crowded app category with different needs (training
+schedules, readiness assessment, a whole curriculum). Don't pull in a full
+training-program UX from that category — this is a narrower tool for an
+older kid and their parent, not a course.
+
+That said, don't over-read "not a toddler app" as "no rewards at all" —
+real usage shows the child actively wants to be the one tapping the
+button, and there's been a genuine, noticeable improvement since starting
+to use it, so the child's own engagement with logging appears to be doing
+real work here, not just the reminder mechanism. See the child self-log +
+rewards item in `TODO.md` for the specific, lightweight shape this should
+take (stars/celebration for logging itself, not a loss-state chart, not
+gated on "good" outcomes only).
 
 ## The core domain logic (get this exactly right)
 
@@ -181,13 +190,23 @@ than "now" (parent forgot to log in the moment) — never assume
   server-driven push (FCM/APNs) in addition to (or instead of) local
   notifications, so both parents' phones stay in sync.
 
-**Phase 3 — nice-to-haves, no urgency, don't build speculatively:**
+**Phase 3 — nice-to-haves, mostly no urgency, don't build speculatively —
+with one exception:**
+- **Child self-log + lightweight rewards** — treat this one as higher
+  priority than the rest of this list, not speculative. Pre-reader-friendly,
+  icon-based (no text) logging so the kid taps it themselves, plus stars/
+  celebration for logging (any log — wee, accident, or poo — not gated on
+  "good" outcomes only). Real usage already shows the child wants to be
+  the one tapping the button, and there's been a genuine improvement since
+  starting to use the app at all — his own engagement with logging seems
+  to be doing real work, not just the reminder mechanic. Keep it
+  lightweight (stars/streak, positive animation) — explicitly not a full
+  toddler-training reward curriculum with loss states or charts that can
+  go backwards; see "Who this is not for" above.
 - Adaptive reminder interval (auto-lengthen after X accident-free days,
   shorten after repeated accidents) — needs real usage data to tune
   sensibly, don't guess the constants up front.
 - In-app feedback prompt.
-- Child self-log: pre-reader-friendly, icon-based (no text) logging with a
-  celebration animation, so the kid can tap it themselves.
 - A "hard/painful?" marker on poo logs (stronger constipation signal than
   frequency alone, per the Rome IV criteria) — only worth it once poo
   logging itself is proven useful.

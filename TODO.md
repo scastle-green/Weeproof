@@ -15,6 +15,14 @@
   keeping in mind when reading the ASO/pricing/distribution notes
   elsewhere in this file: those were scoped to a future native app, not
   a plan to push the current web version as a real release.
+- **Real result so far: a remarkable change since starting to use the
+  app.** Separately, he genuinely likes being involved in logging it
+  himself - tapping the button is something he wants to do, not just
+  tolerates. Both are worth remembering: this isn't just a convenience
+  tool for the parent, the kid's own engagement with it seems to be
+  part of why it's working. Also a good hook for the Distribution /
+  feedback channels posts below if that ever happens - a real "this
+  actually helped" result is worth more than a feature list.
 
 ## Research
 - [x] Look into the science/papers on daytime wetting regression in
@@ -73,11 +81,22 @@
 - [ ] **In-app feedback prompt.** Ask users for feedback and missing
   features from inside the app (not just relying on store reviews) -
   both useful for improving it and for engagement.
-- [ ] **Child self-log.** Let the child log themselves via a
-  pre-reader-friendly, icon-based tap (no text), with a small
-  celebration animation on success - separate concern from the
-  multi-child/childId item below, this is about the child being the one
-  using the button, not about supporting more than one child.
+- [ ] **Child self-log + rewards.** Let the child log themselves via a
+  pre-reader-friendly, icon-based tap (no text), with a celebration
+  animation on success. Bumped up from "someday" to worth prioritizing
+  properly: real usage shows he actively wants to be the one tapping
+  the button, and there's been a remarkable improvement since starting
+  to use the app - the engagement itself may be doing real work here,
+  not just the reminder mechanism. Make it fun and make him feel
+  involved: stars/points for logging (wees and poos both - not just
+  "good" outcomes, showing up and using the toilet is the behavior
+  being reinforced), a simple visible tally or small chart of
+  stars/streaks he can see building up, positive animation/sound on
+  every log. Explicitly *not* a full toddler-training reward curriculum
+  (see BUILD_BRIEF.md's "who this is not for") - keep it lightweight,
+  no loss states, no charts that can go backwards or feel punishing on
+  an accident day. Separate concern from the multi-child/childId item
+  below, which is about supporting more than one child, not this.
 
 ## Distribution / feedback channels
 - [ ] Non-ad places to post for early feedback and users: r/Parenting,
