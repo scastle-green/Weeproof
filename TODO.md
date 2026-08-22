@@ -1,5 +1,13 @@
 # Weeproof — todo
 
+## Context
+- Before this app existed, the stopgap was a native phone reminder set
+  to prompt a toilet check hourly, 9am–9pm — but the phone's built-in
+  Reminders app couldn't actually do proper hourly repeats. That
+  limitation is the direct reason Weeproof exists.
+- Branding idea to consider alongside (or instead of) "Weeproof": **"A
+  Wee Reminder"**.
+
 ## Research
 - [x] Look into the science/papers on daytime wetting regression in
   school-age kids — first pass done, sources in README under
@@ -47,6 +55,26 @@
   straining/pain, per the Rome IV criteria referenced in the research.
   Not built yet since it adds friction to logging; revisit if the poo
   log turns out to be useful on its own first.
+- [ ] **Adaptive reminder interval.** Instead of a flat interval the
+  parent sets once, adapt the check interval automatically based on how
+  it's going: lengthen it after X days with no accidents, shorten it
+  after repeated accidents. Would need to decide/tune what X is and how
+  big a step to adjust by - worth revisiting once there's enough real
+  usage data to see what a sensible default looks like, rather than
+  guessing up front.
+- [ ] **In-app feedback prompt.** Ask users for feedback and missing
+  features from inside the app (not just relying on store reviews) -
+  both useful for improving it and for engagement.
+- [ ] **Child self-log.** Let the child log themselves via a
+  pre-reader-friendly, icon-based tap (no text), with a small
+  celebration animation on success - separate concern from the
+  multi-child/childId item below, this is about the child being the one
+  using the button, not about supporting more than one child.
+
+## Distribution / feedback channels
+- [ ] Non-ad places to post for early feedback and users: r/Parenting,
+  r/toddlers, r/Preschoolers, r/alphaandbetausers, r/SideProject, Indie
+  Hackers, Mumsnet.
 
 ## Future considerations (not building yet)
 - [ ] **Multi-parent logging.** Both parents should be able to log and
