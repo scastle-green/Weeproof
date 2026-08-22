@@ -300,8 +300,8 @@
     } else {
       const remaining = nextReminderAt - Date.now();
       if (remaining <= 0) {
-        els.nextLabel.textContent = 'Reminder';
-        els.countdownValue.textContent = 'Due now';
+        els.nextLabel.textContent = 'Overdue by';
+        els.countdownValue.textContent = '-' + formatDuration(-remaining);
         els.countdownValue.classList.add('overdue');
       } else {
         els.nextLabel.textContent = 'Next reminder in';
@@ -610,9 +610,18 @@
 
   updateNotifyBanner();
   if (nextReminderAt === null) {
-    // No wee logged yet (fresh install, or history cleared) - still start
-    // an hourly reminder cycle from now so the countdown isn't blank.
-    resetReminderFrom(Date.now());
+    // No wee/accident has ever been logged, so there's no real "last
+    // wee" to grant a fresh interval's grace period from - treat it as
+    // already overdue and let the countdown count up, rather than
+    // implying he's fine for a full interval when we simply don't know.
+    // Don't fire an alert immediately on first load though; the next
+    // nag still waits a full repeat interval, same as any other miss.
+    nextReminderAt = Date.now();
+    overshoot = true;
+    saveNextReminderAt();
+    saveOvershoot();
+    clearTimer();
+    reminderTimer = setTimeout(onReminderDue, repeatIntervalMs());
   } else {
     scheduleTimer();
   }
