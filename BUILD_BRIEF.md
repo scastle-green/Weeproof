@@ -203,6 +203,17 @@ with one exception:**
   lightweight (stars/streak, positive animation) — explicitly not a full
   toddler-training reward curriculum with loss states or charts that can
   go backwards; see "Who this is not for" above.
+- **Time-between-events in the log, not time-since-now.** Cheap enough
+  to fold into Phase 1 rather than wait: each log entry currently would
+  show "X ago" relative to the current moment, which stops being useful
+  once time passes. Show the gap to the previous entry of the *same
+  type* instead (e.g. "1h 12m since last wee") — that's the actual
+  pattern that matters for judging whether the reminder interval is
+  well-tuned, and for poos it's literally the constipation-frequency
+  signal from the Research section of `TODO.md`. Pure display logic
+  over data already being fetched — no new fields or backend work
+  needed, so there's no real reason to defer it with the rest of this
+  phase.
 - Adaptive reminder interval (auto-lengthen after X accident-free days,
   shorten after repeated accidents) — needs real usage data to tune
   sensibly, don't guess the constants up front.

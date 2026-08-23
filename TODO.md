@@ -63,6 +63,18 @@
   tracking.
 
 ## Open feature ideas
+- [ ] **Show time between events, not time-since-now, in the log list.**
+  Right now each entry shows "X ago" relative to the current moment,
+  which is only useful in the instant you glance at it and stops being
+  informative as the day goes on. More useful: show the gap to the
+  previous entry of the *same type* (e.g. "9:03am · 1h 12m since last
+  wee") - that surfaces the actual pattern (is he going every 45 min or
+  every 3 hours?) which is what actually matters for judging whether
+  the reminder interval is well-tuned. Same principle applies to poos -
+  the gap between them is literally the constipation-frequency signal
+  already noted under Research, so this isn't just a wee-log nicety.
+  The very first entry of a given type (nothing earlier to compare to)
+  has no gap to show - just the time, or "first today".
 - [ ] Surface the fuller guidance from the research above somewhere
   in-app (e.g. a "Tips" section), once it exists - right now it's only
   in the README.
