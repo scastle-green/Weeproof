@@ -75,6 +75,17 @@
   already noted under Research, so this isn't just a wee-log nicety.
   The very first entry of a given type (nothing earlier to compare to)
   has no gap to show - just the time, or "first today".
+- [ ] **Wee/poo graph over time.** At some point, a proper trends view -
+  wees, accidents, and poos plotted over days/weeks rather than just
+  today's flat list. Natural extension of the time-between-events item
+  above (that's the per-entry version, this is the zoomed-out picture)
+  and directly useful for two things already noted elsewhere: judging
+  whether accidents cluster around long poo gaps (the constipation
+  link from Research), and eventually tuning the adaptive-interval idea
+  off real data instead of guessing. Also just genuinely useful to show
+  a GP if it comes to that - "here's the pattern" beats trying to
+  describe it from memory. No rush on this one; wants real weeks of
+  data in the log before a chart is more useful than noise.
 - [ ] Surface the fuller guidance from the research above somewhere
   in-app (e.g. a "Tips" section), once it exists - right now it's only
   in the README.

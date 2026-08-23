@@ -214,6 +214,16 @@ with one exception:**
   over data already being fetched — no new fields or backend work
   needed, so there's no real reason to defer it with the rest of this
   phase.
+- **Wee/poo trends graph.** Wees, accidents, and poos plotted over
+  days/weeks rather than just a flat daily list — the zoomed-out
+  counterpart to the time-between-events item above. Useful for
+  spotting whether accidents cluster around long poo gaps (the
+  constipation link this app is already built around), for eventually
+  tuning the adaptive-interval idea off real data, and as something to
+  show a GP/paediatrician if it comes to that. Unlike the item above,
+  no rush on this one — it needs real weeks of logged data before a
+  chart is more signal than noise, so it's genuinely fine to defer with
+  the rest of Phase 3.
 - Adaptive reminder interval (auto-lengthen after X accident-free days,
   shorten after repeated accidents) — needs real usage data to tune
   sensibly, don't guess the constants up front.
